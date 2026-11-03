@@ -9,6 +9,7 @@ const reply = (c, b, ttl = 120) => ({
   },
   body: JSON.stringify(b)
 });
+const addD = (s, n) => { const x = new Date(s + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
 const team = (n, c, t) => ({ n, c, t });
 
 exports.handler = async (e) => {
@@ -17,7 +18,7 @@ exports.handler = async (e) => {
   const out = [], notes = [];
 
   try {
-    const r = await fetch(`${FD}/matches?dateFrom=${d}&dateTo=${d}&competitions=${CODES}`,
+    const r = await fetch(`${FD}/matches?dateFrom=${addD(d, -1)}&dateTo=${addD(d, 1)}&competitions=${CODES}`,
       { headers: { "X-Auth-Token": process.env.FOOTBALL_DATA_KEY || "" } });
     const t = await r.json();
     if (!r.ok) throw new Error(t.message || r.status);
