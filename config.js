@@ -14,13 +14,13 @@ window.CONFIG = {
   hero: {
     image: "gop.jpg",      // رابط صورتك
     title: "نااار 🔥",      // مثال: الكلاسيكو
-    kickoff: ": 2026-11-08T20:00:00Z",    // مثال: 2026-11-08T20:00:00Z  (للعدّاد التنازلي)
+    kickoff: "2026-11-08T20:00:00Z",    // مثال: 2026-11-08T20:00:00Z  (للعدّاد التنازلي)
     matchId: "admin=1"     // رقم المباراة لزر التشغيل (يظهر بإضافة ?admin=1 لرابط الموقع)
   },
 
   // روابط البث: "رقم المباراة": "رابط .html"
   streams: {
-    // "fd123456": "https://example.com/stream.html"
+    "fd123456": "https://top1-cdnnew.newkso.ru/top1-cdn/VwKl9zBj0W/mono.m3u8"
   },
   // إن كان مشغلك يستقبل الرابط كمعامل ضع قالبه هنا، مثال: "https://.../Live2.php?url={URL}"
   playerTemplate: "",
