@@ -25,7 +25,7 @@ window.CONFIG = {
   // إن كان مشغلك يستقبل الرابط كمعامل ضع قالبه هنا، مثال: "https://.../Live2.php?url={URL}"
   playerTemplate: "",
   // الرابط التلقائي عند غياب رابط المباراة
-  fallbackStream: "https://tv1.dzmatch.site/p/elbarca.html",
+  fallbackStream: "https://top1-cdnnew.newkso.ru/top1-cdn/VwKl9zBj0W/mono.m3u8",
 
   // الإعلانات لاحقاً: ألصق الكود بين علامتي الاقتباس المائلة `
   ads: { top: ``, middle: ``, watch: `` }
