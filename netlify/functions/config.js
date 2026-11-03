@@ -10,7 +10,7 @@ window.CONFIG = {
   telegramChannel: "https://t.me/YOUR_CHANNEL",
 
   hero: {
-    image: "watermarked_img_6904197424977683778.jpg", // صورتك الحماسية التي صممناها
+    image: "gop.jpg", // صورتك الحماسية التي صممناها
     title: "مباريات اليوم والقمم الكبرى",
     kickoff: "2026-12-31T20:00:00Z",
     matchId: ""
