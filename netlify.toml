@@ -11,3 +11,8 @@
   from = "/api/standings"
   to = "/.netlify/functions/standings"
   status = 200
+
+[[redirects]]
+  from = "/api/scorers"
+  to = "/.netlify/functions/scorers"
+  status = 200
