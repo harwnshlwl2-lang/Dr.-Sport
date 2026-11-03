@@ -20,7 +20,11 @@ header h1{font-size:1.45rem;background:var(--grad);-webkit-background-clip:text;
 .soc{display:flex;gap:6px}.soc a{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;color:var(--g2)}
 .soc svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 main{max-width:760px;margin:0 auto;padding:0 14px}
-.hero{position:relative;margin:14px 0;min-height:210px;border-radius:18px;background:#0c110f center/cover;display:flex;align-items:flex-end;overflow:hidden}
+#ml{column-width:400px;column-gap:32px}.lb{break-inside:avoid;margin-bottom:6px}
+@media(min-width:720px){main{max-width:980px;padding:0 24px}header{padding-inline:max(24px,calc(50vw - 490px))}.row{padding:15px 8px}
+nav.bt{inset:auto auto 14px 50%;transform:translateX(-50%);width:440px;border:1px solid var(--line);border-radius:20px;padding:6px 10px}}
+@media(min-width:1100px){main{max-width:1200px}header{padding-inline:max(24px,calc(50vw - 600px))}.t{font-size:1rem}}
+.hero{position:relative;margin:14px 0;min-height:clamp(210px,36vw,440px);border-radius:18px;background:#0c110f center/cover;display:flex;align-items:flex-end;overflow:hidden}
 .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.92),rgba(0,0,0,.1) 70%)}
 .hero::after{content:"";position:absolute;inset:auto 0 0;height:3px;background:var(--grad);box-shadow:0 0 26px 6px rgba(6,242,106,.55)}
 .hin{position:relative;padding:18px;width:100%;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
@@ -41,6 +45,12 @@ main{max-width:760px;margin:0 auto;padding:0 14px}
 .row em{grid-column:1/-1;font-size:.65rem;color:var(--mu);direction:ltr;text-align:left}
 .msg{padding:40px 0;text-align:center;color:var(--mu)}.err{color:var(--live)}
 .pl{aspect-ratio:16/9;width:100%;border:0;border-radius:14px;background:#000;display:block;margin-top:14px}
+.pw{position:relative;max-width:980px;margin:14px auto 0;aspect-ratio:16/9;background:#000;border-radius:14px;overflow:hidden}
+.pw .pl,.pw video{position:absolute;inset:0;width:100%;height:100%;margin:0;border-radius:0;background:#000}
+.wm{position:absolute;top:10px;inset-inline-start:10px;z-index:3;display:flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;border-radius:20px;background:rgba(0,0,0,.55);pointer-events:none;font-family:Lalezar;font-size:.95rem}.wm img{width:22px;height:22px}
+.pad{position:absolute;inset:auto 0 48px;z-index:4;display:flex;justify-content:center}.pad iframe{border:0;max-width:100%;height:60px;background:transparent}
+.pad button{position:absolute;top:-12px;inset-inline-end:8px;width:24px;height:24px;border-radius:50%;border:0;background:#000b;color:#fff;font-size:1rem;line-height:1}
+.pe{position:absolute;inset:0;z-index:5;display:grid;place-items:center;text-align:center;padding:20px;background:rgba(0,0,0,.88);color:var(--mu)}.pe[hidden]{display:none}
 .sorry{margin:10px 0;padding:11px 14px;border-radius:12px;background:var(--s1);border:1px solid var(--line);color:var(--mu);font-size:.88rem}
 .mh{display:flex;justify-content:space-between;align-items:center;margin:16px 0}
 .tg{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 0;padding:11px 14px;border-radius:12px;border:1px solid var(--line);font-size:.88rem}
@@ -64,12 +74,13 @@ nav.bt a.on::before{content:"";display:block;height:3px;width:28px;margin:0 auto
 <main id="app"></main>
 <nav class="bt"><a id="n1" href="#/">الرئيسية</a><a id="n2" href="#/live">البث المباشر</a></nav>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.8/hls.min.js"></script>
 <script src="config.js"></script>
 <script>
 const C=CONFIG,$=s=>document.querySelector(s),app=$('#app'),admin=/admin=1/.test(location.search);
 const LG={PL:'الدوري الإنجليزي',PD:'الدوري الإسباني',SA:'الدوري الإيطالي',BL1:'الدوري الألماني',FL1:'الدوري الفرنسي',CL:'دوري أبطال أوروبا',ACL:'دوري أبطال آسيا'};
 const TB=['PL','PD','SA','BL1','FL1','CL'];
-const iso=d=>d.toISOString().slice(0,10),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const iso=d=>d.toLocaleDateString('sv'),nm=n=>(C.names&&C.names[n])||n,esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const tm=u=>new Date(u).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
 const cache={};let date=iso(new Date()),lg='all',timer;
 
@@ -86,11 +97,14 @@ const ad=n=>C.ads&&C.ads[n]?`<iframe class="ad" sandbox="allow-scripts allow-pop
 const crest=t=>t.c?`<img src="${esc(t.c)}" alt="" loading="lazy">`:`<i class="ph">${esc((t.t||t.n).slice(0,3))}</i>`;
 const isLive=m=>m.status==='IN_PLAY'||m.status==='PAUSED';
 
+let notes=[];const ld=u=>new Date(u).toLocaleDateString('sv');
 async function load(d){
-  const c=cache[d];if(c&&Date.now()-c.t<60000)return c.m;
+  const c=cache[d];if(c&&Date.now()-c.t<60000){notes=c.n;return c.m}
   const r=await fetch('/api/matches?date='+d),j=await r.json();
   if(!r.ok)throw new Error(j.error||r.status);
-  cache[d]={m:j.matches,t:Date.now()};return j.matches;
+  const fx=t=>{const o=t.n;t.n=nm(o);if(!t.c&&C.crests&&C.crests[o])t.c=C.crests[o];return t};
+  const m=j.matches.filter(x=>ld(x.utc)===d).map(x=>(fx(x.home),fx(x.away),x));
+  notes=j.notes||[];cache[d]={m,t:Date.now(),n:notes};return m;
 }
 function row(m){
   const live=isLive(m),done=m.status==='FINISHED',sc=(live||done)&&m.hs!=null;
@@ -98,11 +112,11 @@ function row(m){
   return `<a class="row" href="#/watch/${m.id}"><span class="t">${crest(m.home)}${esc(m.home.n)}</span><span class="mid"><b>${sc?m.hs+' - '+m.as:tm(m.utc)}</b><small class="${live?'lv':''}">${lab}</small></span><span class="t a">${crest(m.away)}${esc(m.away.n)}</span>${admin?`<em>${m.id}</em>`:''}</a>`;
 }
 function groups(ms){
-  if(!ms.length)return '<p class="msg">لا توجد مباريات في هذا اليوم ضمن الدوريات المعتمدة.</p>';
+  if(!ms.length)return '<p class="msg">لا توجد مباريات في هذا اليوم ضمن الدوريات المعتمدة.'+(admin&&notes.length?'<br><small class="err">'+notes.map(esc).join('<br>')+'</small>':'')+'</p>';
   const g={};ms.forEach(m=>(g[m.comp]=g[m.comp]||[]).push(m));
-  return Object.keys(g).map((k,i)=>`<div class="lgh">${LG[k]||k}</div>${g[k].map(row).join('')}${i===0?ad('middle'):''}`).join('');
+  return Object.keys(g).map((k,i)=>`<section class="lb"><div class="lgh">${LG[k]||k}</div>${g[k].map(row).join('')}${i===0?ad('middle'):''}</section>`).join('');
 }
-const subnav=on=>`<div class="sub"><a class="${on==='m'?'on':''}" href="#/">المباريات</a><a class="${on==='t'?'on':''}" href="#/table/PL">الترتيب</a></div>`;
+const subnav=on=>`<div class="sub"><a class="${on==='m'?'on':''}" href="#/">المباريات</a><a class="${on==='t'?'on':''}" href="#/table/PL">الترتيب</a><a class="${on==='s'?'on':''}" href="#/scorers/PL">الهدافون</a></div>`;
 function hero(){
   const h=C.hero;if(!h.image)return '';
   return `<section class="hero" style="background-image:url('${encodeURI(h.image)}')"><div class="hin"><h2>${esc(h.title)}</h2><span id="cd" data-k="${esc(h.kickoff)}"></span>${h.matchId?`<a class="play" href="#/watch/${esc(h.matchId)}">▶ تشغيل</a>`:''}</div></section>`;
@@ -135,29 +149,46 @@ async function live(){
     app.innerHTML='<div class="lgh" style="margin-top:18px">المباريات الجارية الآن</div>'+(ms.length?ms.map(row).join(''):'<p class="msg">لا توجد مباريات جارية الآن. تفقّد الرئيسية لمواعيد اليوم.</p>')}
   catch(e){app.innerHTML=`<p class="msg err">تعذر الجلب: ${esc(e.message)}</p>`}
 }
+function attach(raw){
+  const v=$('#v');if(!v)return;const bad=()=>{const e=$('#pe');if(e)e.hidden=false};
+  if(/^http:/i.test(raw)&&location.protocol==='https:')return bad();
+  if(window.Hls&&Hls.isSupported()){const h=new Hls();h.loadSource(raw);h.attachMedia(v);h.on(Hls.Events.ERROR,(_,d)=>{if(d.fatal)bad()})}
+  else if(v.canPlayType('application/vnd.apple.mpegurl'))v.src=raw;else bad();
+}
 async function watch(id){
   nav('');app.innerHTML='<p class="msg">جاري التحميل…</p>';
   let m;try{m=(await load(date)).find(x=>x.id===id)||(await load(iso(new Date()))).find(x=>x.id===id)}catch(e){}
-  const src=C.streams[id],url=src?(C.playerTemplate?C.playerTemplate.replace('{URL}',encodeURIComponent(src)):src):C.fallbackStream;
-  const ifr=`<iframe class="pl" src="${esc(url)}" title="البث" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>`;
+  const raw=C.streams[id]||(m&&C.compStreams&&C.compStreams[m.comp])||'',src=raw,isHls=/\.m3u8(\?|$)/i.test(raw);
+  const url=src?(C.playerTemplate&&!isHls?C.playerTemplate.replace('{URL}',encodeURIComponent(src)):src):C.fallbackStream;
+  const ifr=`<div class="pw">${isHls?'<video id="v" controls playsinline autoplay muted></video>':`<iframe class="pl" src="${esc(url)}" title="البث" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>`}<div class="wm"><img src="logo.png" alt="">${esc(C.siteName)}</div>${C.ads&&C.ads.player?`<div class="pad"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" srcdoc="${esc(C.ads.player)}"></iframe><button onclick="this.parentNode.remove()" aria-label="إغلاق">×</button></div>`:''}<div class="pe" id="pe" hidden>تعذر تشغيل البث. قد يكون الرابط منتهياً أو غير مسموح بتشغيله داخل المتصفح.</div></div>`;
   const sc=m&&m.hs!=null?`${m.hs} - ${m.as}`:m?tm(m.utc):'';
   app.innerHTML=`<p style="margin-top:12px"><a href="#/" style="color:var(--g2)">← رجوع</a></p>`+ifr
    +(src?'':'<p class="sorry">نعتذر، رابط البث لهذه المباراة غير متوفر حالياً. نعرض لك مؤقتاً تحليلات beIN SPORTS.</p>')
    +(m?`<div class="mh"><span class="t">${crest(m.home)}${esc(m.home.n)}</span><b class="lg" style="font-size:1.4rem">${sc}</b><span class="t a">${crest(m.away)}${esc(m.away.n)}</span></div>`:'')
    +`<div class="tg"><span>تابعنا على تيليجرام ليصلك كل جديد</span><a href="${esc(C.telegramChannel)}" target="_blank" rel="noopener">تابع</a></div>`+ad('watch');
+  attach(raw);
 }
 async function table(c){
   nav('h');
   const chips=TB.map(k=>`<a class="${c===k?'on':''}" href="#/table/${k}">${LG[k]}</a>`).join('');
   app.innerHTML=subnav('t')+`<div class="chips">${chips}</div><p class="msg">جاري التحميل…</p>`;
   try{const r=await fetch('/api/standings?comp='+c),j=await r.json();if(!r.ok)throw new Error(j.error||r.status);
-    const body=j.groups.map(g=>(g.name?`<div class="lgh">${esc(g.name)}</div>`:'')+`<table><tr><th>#</th><th style="text-align:right">الفريق</th><th>لعب</th><th>+/-</th><th>نقاط</th></tr>${g.rows.map(x=>`<tr><td>${x.p}</td><td class="n"><div>${crest({c:x.c,t:x.t,n:x.n})}${esc(x.n)}</div></td><td>${x.pl}</td><td>${x.gd}</td><td><b>${x.pts}</b></td></tr>`).join('')}</table>`).join('');
+    const body=j.groups.map(g=>(g.name?`<div class="lgh">${esc(g.name)}</div>`:'')+`<table><tr><th>#</th><th style="text-align:right">الفريق</th><th>لعب</th><th>+/-</th><th>نقاط</th></tr>${g.rows.map(x=>`<tr><td>${x.p}</td><td class="n"><div>${crest({c:x.c,t:x.t,n:x.n})}${esc(nm(x.n))}</div></td><td>${x.pl}</td><td>${x.gd}</td><td><b>${x.pts}</b></td></tr>`).join('')}</table>`).join('');
     app.querySelector('.msg').outerHTML=body||'<p class="msg">لا يوجد ترتيب متاح لهذه البطولة.</p>'}
   catch(e){app.querySelector('.msg').outerHTML=`<p class="msg err">تعذر جلب الترتيب: ${esc(e.message)}</p>`}
 }
+async function scorers(c){
+  nav('h');
+  const chips=TB.map(k=>`<a class="${c===k?'on':''}" href="#/scorers/${k}">${LG[k]}</a>`).join('');
+  app.innerHTML=subnav('s')+`<div class="chips">${chips}</div><p class="msg">جاري التحميل…</p>`;
+  const set=h=>app.querySelector('.msg').outerHTML=h;
+  try{const r=await fetch('/api/scorers?comp='+c),j=await r.json();if(!r.ok)throw new Error(j.error||r.status);
+    set(j.rows.length?`<table><tr><th>#</th><th style="text-align:right">اللاعب</th><th>الفريق</th><th>أهداف</th></tr>${j.rows.map((x,i)=>`<tr><td>${i+1}</td><td class="n"><div>${crest({c:x.c,t:x.t,n:x.n})}${esc(x.p)}</div></td><td>${esc(nm(x.n))}</td><td><b>${x.g}</b></td></tr>`).join('')}</table>`:'<p class="msg">لا توجد بيانات هدافين حالياً.</p>')}
+  catch(e){set(`<p class="msg err">تعذر جلب الهدافين: ${esc(e.message)}</p>`)}
+}
 function route(){
   const [,p,a]=location.hash.split('/');window.scrollTo(0,0);
-  if(p==='live')live();else if(p==='watch')watch(a);else if(p==='table')table(a||'PL');else home();
+  if(p==='live')live();else if(p==='watch')watch(a);else if(p==='table')table(a||'PL');else if(p==='scorers')scorers(a||'PL');else home();
 }
 addEventListener('hashchange',route);route();
 setInterval(tick,1000);
